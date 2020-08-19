@@ -1,15 +1,14 @@
 var express = require('express');
 var router = express.Router();
 
-const data = require('../models/data')
-
+const datadate = require('../models/datadate')
 
 // _______________________  READ (METHOD:GET) ________________________________
 
 router.get('/', function (req, res, next) {
     let response = []
 
-    data.find()
+    datadate.find()
         .then(data => {
             response = data.map(item => {
                 return {
@@ -28,8 +27,6 @@ router.get('/', function (req, res, next) {
 
 
 
-
-
 // _______________________  ADD (METHOD:POST) _______________________ 
 
 router.post('/', function (req, res, next) {
@@ -42,15 +39,15 @@ router.post('/', function (req, res, next) {
         data: {}
     }
 
-    const Data = new data({
+    const dataDate = new datadate({
         letter: letter,
         frequency: frequency
     })
 
-    Data.save()
+    dataDate.save()
         .then(result => {
             response.succes = true
-            response.message = "data sudah ditambahkan"
+            response.message = "Penambahan data berhasil"
             response.data._id = result._id
             response.data.letter = result.letter
             response.data.frequency = result.frequency
@@ -80,7 +77,7 @@ router.post('/search', function (req, res, next) {
         filter.frequency = frequency;
     }
 
-    data.find(filter)
+    datadate.find(filter)
         .then(data => {
             response = data.map(item => {
                 return {
@@ -98,6 +95,7 @@ router.post('/search', function (req, res, next) {
 });
 
 
+
 // _______________________  EDIT (METHOD:PUT) _______________________ 
 router.put('/:id', function (req, res, next) {
     let id = req.params.id
@@ -110,10 +108,10 @@ router.put('/:id', function (req, res, next) {
         data: {}
     }
 
-    data.findByIdAndUpdate(id, { letter, frequency }, {new: true})
+    datadate.findByIdAndUpdate(id, { letter, frequency }, {new: true})
         .then(data => {
             response.succes = true
-            response.message = "data sudah diupdate"
+            response.message = "Update data done"
             response.data._id = data._id
             response.data.letter = data.letter
             response.data.frequency = data.frequency
@@ -135,17 +133,17 @@ router.delete('/:id', function (req, res, next) {
         data: {}
     }
 
-    data.findByIdAndRemove(id)
+    datadate.findByIdAndRemove(id)
         .then(data => {
             response.succes = true
-            response.message = "data sudah dihapus"
+            response.message = "Penghapusan data done"
             response.data._id = data._id
             response.data.letter = data.letter
             response.data.frequency = data.frequency
             res.status(201).json(response)
         })
         .catch(err => {
-            response.message = "delete failed"
+            response.message = "delete data failed"
             res.status(500).json(response)
         })
 })
@@ -161,10 +159,10 @@ router.get('/:id', function (req, res, next) {
         data: {}
     }
 
-    data.findById(id)
+    datadate.findById(id)
         .then(data => {
             response.succes = true
-            response.message = "data ditemukan"
+            response.message = "Data ini ditemukan"
             response.data._id = data._id
             response.data.letter = data.letter
             response.data.frequency = data.frequency

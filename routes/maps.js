@@ -1,21 +1,53 @@
 var express = require('express');
 var router = express.Router();
 
-const data = require('../models/data')
+const map = require('../models/map')
+
+//___________________________ADD MAP (METHOD:POST) ___________________________
+router.post('/', function (req, res, next) {
+    const { title, lat, lng } = req.body
+
+    let response = {
+        success: false,
+        message: "",
+        data: {}
+    }
+
+    const Map = new map({
+        title: title,
+        lat: lat,
+        lng: lng
+    })
+
+    Map.save()
+        .then(result => {
+            response.success = true
+            response.message = "data map sudah ditambahkan"
+            response.data._id = result._id
+            response.data.title = result.title
+            response.data.lat = result.lat
+            response.data.lng = result.lng
+            res.status(201).json(response)
+        })
+        .catch(err => {
+            res.status(500).json(response)
+        })
+
+});
 
 
-// ___________________________  READ (METHOD:GET) ________________________________
-
+// ___________________________ READ MAP (METHOD:GET) ___________________________
 router.get('/', function (req, res, next) {
     let response = []
 
-    data.find()
+    map.find()
         .then(data => {
             response = data.map(item => {
                 return {
                     _id: item._id,
-                    letter: item.letter,
-                    frequency: item.frequency
+                    title: item.title,
+                    lat: item.lat,
+                    lng: item.lng,
                 }
             })
             res.status(200).json(response)
@@ -26,67 +58,24 @@ router.get('/', function (req, res, next) {
 
 })
 
-
-
-
-
-// _______________________  ADD (METHOD:POST) _______________________ 
-
-router.post('/', function (req, res, next) {
-    let { letter,
-        frequency } = req.body
-
-    let response = {
-        succes: false,
-        message: "",
-        data: {}
-    }
-
-    const Data = new data({
-        letter: letter,
-        frequency: frequency
-    })
-
-    Data.save()
-        .then(result => {
-            response.succes = true
-            response.message = "data sudah ditambahkan"
-            response.data._id = result._id
-            response.data.letter = result.letter
-            response.data.frequency = result.frequency
-            res.status(201).json(response)
-        })
-        .catch(err => {
-            res.status(500).json(response)
-        })
-})
-
-
-
-// _______________________  BROWSE (METHOD:POST) _______________________ 
-
+//___________________________ BROWSE MAP (METHOD:POST) ___________________________
 router.post('/search', function (req, res, next) {
-    let { letter, frequency } = req.body
-    let reg = new RegExp(letter, 'i');
+    let reg = new RegExp(req.body.title, 'i');
     let response = []
     let filter = {}
 
-    if (letter && frequency) {
-        filter.letter = { $regex: reg };
-        filter.frequency = frequency;
-    } else if (letter) {
-        filter.letter = { $regex: reg };
-    } else if (frequency) {
-        filter.frequency = frequency;
+    if (req.body.title) {
+        filter.title = { $regex: reg };
     }
 
-    data.find(filter)
+    map.find(filter)
         .then(data => {
             response = data.map(item => {
                 return {
                     _id: item._id,
-                    letter: item.letter,
-                    frequency: item.frequency
+                    title: item.title,
+                    lat: item.lat,
+                    lng: item.lng,
                 }
             })
             res.status(200).json(response)
@@ -97,26 +86,26 @@ router.post('/search', function (req, res, next) {
 
 });
 
-
-// _______________________  EDIT (METHOD:PUT) _______________________ 
+// ___________________________ EDIT MAP (METHOD:PUT) ___________________________
 router.put('/:id', function (req, res, next) {
     let id = req.params.id
 
-    let { letter, frequency } = req.body
+    let { title, lat, lng } = req.body
 
     let response = {
-        succes: false,
+        success: false,
         message: "",
         data: {}
     }
 
-    data.findByIdAndUpdate(id, { letter, frequency }, {new: true})
+    map.findByIdAndUpdate(id, { title, lat, lng }, {new: true})
         .then(data => {
             response.succes = true
             response.message = "data sudah diupdate"
             response.data._id = data._id
-            response.data.letter = data.letter
-            response.data.frequency = data.frequency
+            response.data.title = data.title
+            response.data.lat = data.lat
+            response.data.lng = data.lng
             res.status(201).json(response)
         })
         .catch(err => {
@@ -125,7 +114,7 @@ router.put('/:id', function (req, res, next) {
         })
 })
 
-// _______________________ DELETE (METHOD:DELETE) _______________________ 
+// ___________________________ DELETE MAP (METHOD:DELETE) ___________________________
 router.delete('/:id', function (req, res, next) {
     let id = req.params.id
 
@@ -135,13 +124,14 @@ router.delete('/:id', function (req, res, next) {
         data: {}
     }
 
-    data.findByIdAndRemove(id)
+    map.findByIdAndRemove(id)
         .then(data => {
             response.succes = true
             response.message = "data sudah dihapus"
             response.data._id = data._id
-            response.data.letter = data.letter
-            response.data.frequency = data.frequency
+            response.data.title = data.title
+            response.data.lat = data.lat
+            response.data.lng = data.lng
             res.status(201).json(response)
         })
         .catch(err => {
@@ -150,8 +140,7 @@ router.delete('/:id', function (req, res, next) {
         })
 })
 
-
-// _______________________ FIND (METHOD:GET) _______________________ 
+// ___________________________ FIND (METHOD:GET) ___________________________
 router.get('/:id', function (req, res, next) {
     let id = req.params.id
 
@@ -161,13 +150,14 @@ router.get('/:id', function (req, res, next) {
         data: {}
     }
 
-    data.findById(id)
+    map.findById(id)
         .then(data => {
             response.succes = true
             response.message = "data ditemukan"
             response.data._id = data._id
-            response.data.letter = data.letter
-            response.data.frequency = data.frequency
+            response.data.title = data.title
+            response.data.lat = data.lat
+            response.data.lng = data.lng
             res.status(201).json(response)
         })
         .catch(err => {
@@ -175,6 +165,5 @@ router.get('/:id', function (req, res, next) {
             res.status(500).json(response)
         })
 })
-
 
 module.exports = router;
