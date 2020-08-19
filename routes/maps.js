@@ -22,7 +22,7 @@ router.post('/', function (req, res, next) {
     Map.save()
         .then(result => {
             response.success = true
-            response.message = "data map sudah ditambahkan"
+            response.message = "data have been added"
             response.data._id = result._id
             response.data.title = result.title
             response.data.lat = result.lat
@@ -101,7 +101,7 @@ router.put('/:id', function (req, res, next) {
     map.findByIdAndUpdate(id, { title, lat, lng }, {new: true})
         .then(data => {
             response.succes = true
-            response.message = "data sudah diupdate"
+            response.message = "data have been updated"
             response.data._id = data._id
             response.data.title = data.title
             response.data.lat = data.lat
@@ -127,7 +127,7 @@ router.delete('/:id', function (req, res, next) {
     map.findByIdAndRemove(id)
         .then(data => {
             response.succes = true
-            response.message = "data sudah dihapus"
+            response.message = "data have been deleted"
             response.data._id = data._id
             response.data.title = data.title
             response.data.lat = data.lat
@@ -153,7 +153,7 @@ router.get('/:id', function (req, res, next) {
     map.findById(id)
         .then(data => {
             response.succes = true
-            response.message = "data ditemukan"
+            response.message = "data found"
             response.data._id = data._id
             response.data.title = data.title
             response.data.lat = data.lat
@@ -161,7 +161,7 @@ router.get('/:id', function (req, res, next) {
             res.status(201).json(response)
         })
         .catch(err => {
-            response.message = "data tidak ditemukan"
+            response.message = "data not found"
             res.status(500).json(response)
         })
 })
